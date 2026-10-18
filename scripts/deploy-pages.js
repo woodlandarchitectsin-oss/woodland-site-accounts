@@ -1,0 +1,20 @@
+// Publishes the app page (src/index.html) plus the install files in pages/ to the gh-pages branch (what GitHub Pages serves).
+// Run after `npm test`. The same index.html is also what clasp pushes to Google, so both addresses always match.
+const { execFileSync } = require('child_process')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
+const root = path.join(__dirname, '..')
+const run = (cwd, ...a) => execFileSync('git', a, { cwd, stdio: ['ignore', 'pipe', 'inherit'] }).toString().trim()
+const remote = run(root, 'remote', 'get-url', 'origin')
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'wsa-pages-'))
+fs.cpSync(path.join(root, 'pages'), tmp, { recursive: true })
+fs.copyFileSync(path.join(root, 'src', 'index.html'), path.join(tmp, 'index.html'))
+fs.writeFileSync(path.join(tmp, '.nojekyll'), '')
+run(tmp, 'init', '-q', '-b', 'gh-pages')
+run(tmp, 'add', '-A')
+const msg = 'Publish app ' + new Date().toISOString() + '\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>'
+run(tmp, '-c', 'user.name=Woodland Site Accounts', '-c', 'user.email=woodlandarchitects.in@gmail.com', 'commit', '-q', '-m', msg)
+run(tmp, 'push', '-q', '--force', remote, 'gh-pages')
+fs.rmSync(tmp, { recursive: true, force: true })
+console.log('published to gh-pages')

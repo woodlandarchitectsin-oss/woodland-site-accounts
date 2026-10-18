@@ -1,0 +1,5 @@
+node_modules/
+test/shots/
+.clasp.json
+.clasprc.json
+*.log
