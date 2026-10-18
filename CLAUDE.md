@@ -29,3 +29,8 @@ Google Apps Script web app (V8). One shared cash book for Woodland Architects. D
 - Sites carry a `projectId` (WA-###) in an extra last column of the Sites tab ('Project OS ID'; the header is added automatically to old sheets).
 - Admin button 'Bring in projects from Project OS' (Sites tab) calls `syncProjects`: asks Project OS for in-process projects, shows what will be added or linked, then writes. Existing sites with the same name are linked, never renamed or duplicated; nothing is deleted.
 - Needs Script Property `LINK_KEY` (a copy of Project OS's). `PROJECT_OS_URL` is optional (default is in Code.gs). The manifest has the extra scope `script.external_request`: after the first deploy the owner must open the script editor, run `doGet` once and accept the new permission (do NOT run `setPins` for this).
+
+## Also online on GitHub Pages
+- Same `src/index.html` is served from Google's link and from https://woodlandarchitectsin-oss.github.io/woodland-site-accounts/ (repo woodlandarchitectsin-oss/woodland-site-accounts, code only). On Pages the page posts `{fn, args}` to the script's `doPost` (only whitelisted functions; each still checks the PIN). Inside Google it keeps using `google.script.run`.
+- Publish the Pages copy after `npm test`: `node scripts/deploy-pages.js` (uses `pages/` for manifest, icons, service worker). Always `clasp push` + `clasp deploy -i <ID>` too when Code.gs changes.
+- When adding a public server function, also add it to the `fns` map in `doPost`, or the Pages copy cannot call it.
