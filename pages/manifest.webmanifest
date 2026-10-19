@@ -4,7 +4,7 @@
   "description": "Woodland Architects — site cash book.",
   "start_url": "./",
   "scope": "./",
-  "id": "./",
+  "id": "/woodland-site-accounts/",
   "display": "standalone",
   "orientation": "any",
   "theme_color": "#2b5c94",
