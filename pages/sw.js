@@ -1,5 +1,5 @@
 /* Woodland Site Accounts — service worker.
-   Keeps a copy of the app files so the page opens quickly and the shell works with a weak signal.
+   Keeps a copy of the app files (its cache name starts with "wsa-shell-" so it never touches the other Woodland apps on this address) so the page opens quickly and the shell works with a weak signal.
    Accounts data always comes live from Google (cross-origin requests are never touched here). */
 const CACHE = 'wsa-shell-v1'
 
@@ -12,7 +12,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('wsa-shell-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   )
 })
@@ -27,6 +27,6 @@ self.addEventListener('fetch', (e) => {
         if (res.ok) caches.open(CACHE).then((c) => c.put(req, res.clone()))
         return res
       })
-      .catch(() => caches.match(req).then((hit) => hit || (req.mode === 'navigate' ? caches.match('./') : Response.error()))),
+      .catch(() => caches.open(CACHE).then((c) => c.match(req).then((hit) => hit || (req.mode === 'navigate' ? c.match('./') : Response.error())))),
   )
 })
